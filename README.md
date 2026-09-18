@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CVS 学習 — CVS / VES / VEリーダー 受験対策アプリ
 
-## Getting Started
+VE（バリューエンジニアリング）資格試験の受験勉強用 Web アプリ。
+サーバー・ログイン不要。データはすべてブラウザ内（localStorage）に保存されます。
 
-First, run the development server:
+## 機能
+
+| 画面 | 内容 |
+|---|---|
+| ホーム | 今日の復習件数、通算正答率、分野別正答率の横棒グラフ、直近14日の学習数 |
+| 演習 | 分野・形式・問題数を選んで出題。即時採点＋解説。「苦手・復習優先」モードあり |
+| カード | 用語カードをめくって自己採点。「あやふや」だけ周回するモード |
+| 管理 | 全問一覧・検索、自作問題の追加/編集、JSON インポート/エクスポート、記録リセット |
+
+- 出題形式: 用語 / 正誤 / 選択（**短文記述・計算は型と分岐のみ用意。UIは今後追加**）
+- 間隔反復: ライトナー方式（正解で箱を1つ上げ、不正解で箱0へ。次回間隔 0/1/2/4/7/15/30日）
+- 収録問題: 用語 72 / 正誤 83 / 選択 58 ＝ **計 213 問**（8分野）
+- キーボード操作: 正誤 `1`=○ `2`=×、選択 `1`〜`4`、`Enter`=次へ
+- スマホ対応（下部タブバー）、ダークモード対応
+
+## 問題データの追加
+
+正誤表・用語解説の追加は **[DATA-FORMAT.md](./DATA-FORMAT.md)** を参照。
+再ビルド不要、画面上のインポートだけで反映されます。
+
+## 技術スタック
+
+Next.js 16.3.5 (App Router) / React 19 / TypeScript / Tailwind CSS v4
+外部 API・DB・チャートライブラリなし。グラフは自前のインライン SVG。
+
+## 開発
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev     # http://localhost:3000
+npm run build   # 本番ビルド
+npm run lint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## デプロイ
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Vercel にこのリポジトリを Import するだけ。環境変数は不要です。
+全ページが静的生成（SSG）されるため Hobby プランで無料運用できます。
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## データの持ち出し
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+学習記録と自作問題は「管理 → データ → エクスポート」で JSON として保存できます。
+端末を移すときや、ブラウザデータを消す前にエクスポートしてください。
