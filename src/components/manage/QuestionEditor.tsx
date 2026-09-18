@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react'
-import type { Category, Difficulty, Question, QuestionType } from '@/lib/types'
+import { useState, type ReactNode } from 'react'
+import type { Question } from '@/lib/types'
 import { CATEGORIES, IMPLEMENTED_TYPES, QUESTION_TYPE_LABEL } from '@/lib/types'
-import { Button, Card } from '@/components/ui'
+import { Button, Card, ExamChips } from '@/components/ui'
+import { build, newId, toCategory, toDifficulty, toDraft, toType, type Draft } from './editorDraft'
 
 interface Props {
   initial: Question | null
@@ -12,95 +13,16 @@ interface Props {
   onCancel: () => void
 }
 
-interface Draft {
-  type: QuestionType
-  category: Category
-  difficulty: Difficulty
-  tags: string
-  source: string
-  term: string
-  definition: string
-  note: string
-  statement: string
-  answer: boolean
-  stem: string
-  options: string[]
-  answerIndex: number
-  explanation: string
-}
-
 const input = 'w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm'
 const label = 'block text-xs text-muted mb-1'
 
-function toDraft(q: Question | null): Draft {
-  const d: Draft = {
-    type: 'truefalse', category: 'VE基礎', difficulty: 2, tags: '', source: '自作',
-    term: '', definition: '', note: '', statement: '', answer: true,
-    stem: '', options: ['', '', '', ''], answerIndex: 0, explanation: '',
-  }
-  if (!q) return d
-  d.type = q.type
-  d.category = q.category
-  d.difficulty = q.difficulty
-  d.tags = q.tags.join(', ')
-  d.source = q.source
-  if (q.type === 'term') {
-    d.term = q.term
-    d.definition = q.definition
-    d.note = q.note ?? ''
-  } else if (q.type === 'truefalse') {
-    d.statement = q.statement
-    d.answer = q.answer
-    d.explanation = q.explanation
-  } else if (q.type === 'choice') {
-    d.stem = q.stem
-    d.options = [...q.options, '', '', '', ''].slice(0, Math.max(4, q.options.length))
-    d.answerIndex = q.answerIndex
-    d.explanation = q.explanation
-  }
-  return d
-}
-
-const toCategory = (v: string): Category => CATEGORIES.find((c) => c === v) ?? 'VE基礎'
-const toType = (v: string): QuestionType => IMPLEMENTED_TYPES.find((t) => t === v) ?? 'truefalse'
-const toDifficulty = (v: string): Difficulty => (v === '1' ? 1 : v === '3' ? 3 : 2)
-
-function newId(existing: Set<string>): string {
-  let n = 1
-  while (existing.has(`custom-${String(n).padStart(3, '0')}`)) n++
-  return `custom-${String(n).padStart(3, '0')}`
-}
-
-/** ドラフトを検証して Question にする。エラーがあれば文字列を返す */
-function build(d: Draft, id: string): Question | string {
-  const base = {
-    id,
-    category: d.category,
-    difficulty: d.difficulty,
-    tags: d.tags.split(/[,、\s]+/).map((t) => t.trim()).filter(Boolean),
-    source: d.source.trim() || '自作',
-  }
-  switch (d.type) {
-    case 'term':
-      if (!d.term.trim() || !d.definition.trim()) return '用語と定義は必須です。'
-      return { ...base, type: 'term', term: d.term.trim(), definition: d.definition.trim(), note: d.note.trim() || undefined }
-    case 'truefalse':
-      if (!d.statement.trim()) return '設問文は必須です。'
-      if (!d.explanation.trim()) return '解説は必須です。'
-      return { ...base, type: 'truefalse', statement: d.statement.trim(), answer: d.answer, explanation: d.explanation.trim() }
-    case 'choice': {
-      const options = d.options.map((o) => o.trim()).filter(Boolean)
-      if (!d.stem.trim()) return '設問文は必須です。'
-      if (options.length < 2) return '選択肢は2つ以上必要です。'
-      const correct = d.options[d.answerIndex]?.trim()
-      const answerIndex = correct ? options.indexOf(correct) : -1
-      if (answerIndex < 0) return '正解の選択肢を選んでください。'
-      if (!d.explanation.trim()) return '解説は必須です。'
-      return { ...base, type: 'choice', stem: d.stem.trim(), options, answerIndex, explanation: d.explanation.trim() }
-    }
-    default:
-      return 'この形式はまだ作成できません。'
-  }
+function Field({ name, children }: { name: string; children: ReactNode }) {
+  return (
+    <div>
+      <label className={label}>{name}</label>
+      {children}
+    </div>
+  )
 }
 
 export function QuestionEditor({ initial, existingIds, onSave, onCancel }: Props) {
@@ -122,9 +44,14 @@ export function QuestionEditor({ initial, existingIds, onSave, onCancel }: Props
   return (
     <Card>
       <h2 className="font-semibold mb-3">{initial ? `自作問題を編集（${initial.id}）` : '自作問題を追加'}</h2>
+
+      <div className="mb-3">
+        <label className={label}>試験区分（必須・複数可）</label>
+        <ExamChips selected={d.exams} onChange={(exams) => set('exams', exams)} />
+      </div>
+
       <div className="grid grid-cols-2 gap-3 mb-3">
-        <div>
-          <label className={label}>形式</label>
+        <Field name="形式">
           <select className={input} value={d.type} onChange={(e) => set('type', toType(e.target.value))} disabled={!!initial}>
             {IMPLEMENTED_TYPES.map((t) => (
               <option key={t} value={t}>
@@ -132,9 +59,8 @@ export function QuestionEditor({ initial, existingIds, onSave, onCancel }: Props
               </option>
             ))}
           </select>
-        </div>
-        <div>
-          <label className={label}>分野</label>
+        </Field>
+        <Field name="分野">
           <select className={input} value={d.category} onChange={(e) => set('category', toCategory(e.target.value))}>
             {CATEGORIES.map((c) => (
               <option key={c} value={c}>
@@ -142,66 +68,58 @@ export function QuestionEditor({ initial, existingIds, onSave, onCancel }: Props
               </option>
             ))}
           </select>
-        </div>
-        <div>
-          <label className={label}>難易度</label>
+        </Field>
+        <Field name="難易度">
           <select className={input} value={d.difficulty} onChange={(e) => set('difficulty', toDifficulty(e.target.value))}>
             <option value={1}>1（易）</option>
             <option value={2}>2</option>
             <option value={3}>3（難）</option>
           </select>
-        </div>
-        <div>
-          <label className={label}>出典</label>
+        </Field>
+        <Field name="出典">
           <input className={input} value={d.source} onChange={(e) => set('source', e.target.value)} />
-        </div>
+        </Field>
         <div className="col-span-2">
-          <label className={label}>タグ（カンマ区切り）</label>
-          <input className={input} value={d.tags} onChange={(e) => set('tags', e.target.value)} />
+          <Field name="タグ（カンマ区切り）">
+            <input className={input} value={d.tags} onChange={(e) => set('tags', e.target.value)} />
+          </Field>
         </div>
       </div>
 
       {d.type === 'term' && (
         <div className="space-y-3 mb-3">
-          <div>
-            <label className={label}>用語</label>
+          <Field name="用語">
             <input className={input} value={d.term} onChange={(e) => set('term', e.target.value)} />
-          </div>
-          <div>
-            <label className={label}>定義</label>
+          </Field>
+          <Field name="定義">
             <textarea className={input} rows={4} value={d.definition} onChange={(e) => set('definition', e.target.value)} />
-          </div>
-          <div>
-            <label className={label}>補足（任意）</label>
+          </Field>
+          <Field name="補足（任意）">
             <input className={input} value={d.note} onChange={(e) => set('note', e.target.value)} />
-          </div>
+          </Field>
         </div>
       )}
 
       {d.type === 'truefalse' && (
         <div className="space-y-3 mb-3">
-          <div>
-            <label className={label}>設問文</label>
+          <Field name="設問文">
             <textarea className={input} rows={3} value={d.statement} onChange={(e) => set('statement', e.target.value)} />
-          </div>
-          <div>
-            <label className={label}>正解</label>
+          </Field>
+          <Field name="正解">
             <div className="flex gap-2">
               <Button variant={d.answer ? 'primary' : 'secondary'} onClick={() => set('answer', true)}>○ 正しい</Button>
               <Button variant={!d.answer ? 'primary' : 'secondary'} onClick={() => set('answer', false)}>× 誤り</Button>
             </div>
-          </div>
+          </Field>
         </div>
       )}
 
       {d.type === 'choice' && (
         <div className="space-y-3 mb-3">
-          <div>
-            <label className={label}>設問文</label>
+          <Field name="設問文">
             <textarea className={input} rows={3} value={d.stem} onChange={(e) => set('stem', e.target.value)} />
-          </div>
-          <div>
-            <label className={label}>選択肢（ラジオで正解を指定）</label>
+          </Field>
+          <Field name="選択肢（ラジオで正解を指定）">
             <div className="space-y-2">
               {d.options.map((o, i) => (
                 <div key={i} className="flex items-center gap-2">
@@ -215,14 +133,54 @@ export function QuestionEditor({ initial, existingIds, onSave, onCancel }: Props
                 </div>
               ))}
             </div>
-          </div>
+          </Field>
         </div>
       )}
 
       {(d.type === 'truefalse' || d.type === 'choice') && (
         <div className="mb-3">
-          <label className={label}>解説（2〜4文）</label>
-          <textarea className={input} rows={3} value={d.explanation} onChange={(e) => set('explanation', e.target.value)} />
+          <Field name="解説（任意。空なら解説ブロックを表示しない）">
+            <textarea className={input} rows={3} value={d.explanation} onChange={(e) => set('explanation', e.target.value)} />
+          </Field>
+        </div>
+      )}
+
+      {d.type === 'short' && (
+        <div className="space-y-3 mb-3">
+          <Field name="問題文">
+            <textarea className={input} rows={3} value={d.prompt} onChange={(e) => set('prompt', e.target.value)} />
+          </Field>
+          <Field name="模範解答">
+            <textarea className={input} rows={4} value={d.modelAnswer} onChange={(e) => set('modelAnswer', e.target.value)} />
+          </Field>
+          <Field name="キーワード（カンマ区切り・任意）">
+            <input className={input} value={d.keywords} onChange={(e) => set('keywords', e.target.value)} />
+          </Field>
+        </div>
+      )}
+
+      {d.type === 'calc' && (
+        <div className="space-y-3 mb-3">
+          <Field name="問題文">
+            <textarea className={input} rows={3} value={d.prompt} onChange={(e) => set('prompt', e.target.value)} />
+          </Field>
+          <div className="grid grid-cols-3 gap-3">
+            <Field name="答え（数値）">
+              <input className={input} inputMode="decimal" value={d.calcAnswer} onChange={(e) => set('calcAnswer', e.target.value)} />
+            </Field>
+            <Field name="単位（任意）">
+              <input className={input} value={d.unit} onChange={(e) => set('unit', e.target.value)} />
+            </Field>
+            <Field name="許容誤差（任意）">
+              <input className={input} inputMode="decimal" value={d.tolerance} onChange={(e) => set('tolerance', e.target.value)} placeholder="0" />
+            </Field>
+          </div>
+          <Field name="解法">
+            <textarea className={input} rows={4} value={d.solution} onChange={(e) => set('solution', e.target.value)} />
+          </Field>
+          <p className="text-xs text-muted leading-relaxed">
+            数値で判定しにくい問題は、答えを 0 にしてタグに「記述式」を入れると、説明問題と同じ自己採点になります。
+          </p>
         </div>
       )}
 

@@ -1,21 +1,26 @@
 'use client'
 
 import { useCallback, useMemo, useSyncExternalStore } from 'react'
-import type { CustomQuestionStore, Progress, Question, Session } from '@/lib/types'
+import type { CustomQuestionStore, ExamLevel, Progress, Question, Session } from '@/lib/types'
 import { applyAnswer } from '@/lib/srs'
+import { applyOverrides, retagQuestions, type RetagOp, type RetagResult } from '@/lib/exams'
 import { STANDARD_QUESTIONS } from '@/data/questions'
 import { commitCustom, commitProgress, commitReset, getServerSnapshot, getSnapshot, reloadSnapshot, subscribe } from '@/lib/store'
 
 export interface StudyData {
   progress: Progress
   custom: CustomQuestionStore
-  /** 標準問題 + 自作問題（自作の id が重複する場合は自作を優先） */
+  /** 標準問題（overrides 適用済み）+ 自作問題（自作の id が重複する場合は自作を優先） */
   questions: Question[]
   /** 描画時点の「現在時刻」（描画中に Date.now() を呼ばないため） */
   now: number
   recordAnswer: (questionId: string, correct: boolean) => void
   addSession: (session: Session) => void
   updateCustom: (next: CustomQuestionStore) => void
+  /** 区分の一括再タグ。標準問題は overrides、自作問題は本体を書き換える */
+  retag: (targets: readonly Question[], op: RetagOp, levels: readonly ExamLevel[]) => RetagResult | null
+  /** 標準問題への再タグ（overrides）をすべて取り消す */
+  clearOverrides: () => void
   resetProgress: () => void
   reload: () => void
 }
@@ -45,13 +50,28 @@ export function useStudyData(): StudyData | null {
   }, [])
 
   const updateCustom = useCallback((next: CustomQuestionStore) => commitCustom(next), [])
+
+  const retag = useCallback((targets: readonly Question[], op: RetagOp, levels: readonly ExamLevel[]) => {
+    const cur = getSnapshot()
+    if (!cur) return null
+    const result = retagQuestions(cur.custom, STANDARD_QUESTIONS, targets, op, levels)
+    if (result.changed > 0) commitCustom(result.store)
+    return result
+  }, [])
+
+  const clearOverrides = useCallback(() => {
+    const cur = getSnapshot()
+    if (!cur) return
+    commitCustom({ ...cur.custom, overrides: {} })
+  }, [])
+
   const resetProgress = useCallback(() => commitReset(), [])
   const reload = useCallback(() => reloadSnapshot(), [])
 
   const questions = useMemo(() => {
     if (!snap) return STANDARD_QUESTIONS
     const map = new Map<string, Question>()
-    for (const q of STANDARD_QUESTIONS) map.set(q.id, q)
+    for (const q of applyOverrides(STANDARD_QUESTIONS, snap.custom.overrides)) map.set(q.id, q)
     for (const q of snap.custom.questions) map.set(q.id, q)
     return [...map.values()]
   }, [snap])
@@ -66,8 +86,10 @@ export function useStudyData(): StudyData | null {
       recordAnswer,
       addSession,
       updateCustom,
+      retag,
+      clearOverrides,
       resetProgress,
       reload,
     }
-  }, [snap, questions, recordAnswer, addSession, updateCustom, resetProgress, reload])
+  }, [snap, questions, recordAnswer, addSession, updateCustom, retag, clearOverrides, resetProgress, reload])
 }

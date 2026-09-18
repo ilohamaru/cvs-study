@@ -3,7 +3,7 @@ import './globals.css'
 import { Nav } from '@/components/Nav'
 
 export const metadata: Metadata = {
-  title: 'CVS 学習',
+  title: 'VE 学習',
   description: 'CVS / VES / VEリーダー 受験勉強アプリ',
 }
 

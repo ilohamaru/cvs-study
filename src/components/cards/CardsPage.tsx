@@ -2,14 +2,16 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useStudyData } from '@/hooks/useStudyData'
-import type { Category, TermQ } from '@/lib/types'
-import { CATEGORIES } from '@/lib/types'
+import type { Category, ExamLevel, TermQ } from '@/lib/types'
+import { CATEGORIES, EXAM_LEVELS } from '@/lib/types'
 import { isShaky, shuffle } from '@/lib/srs'
-import { Button, Card, Chip, PageTitle, Skeleton, Toggle } from '@/components/ui'
+import { countByExam, inExams } from '@/lib/exams'
+import { Button, Card, Chip, ExamChips, PageTitle, Skeleton, Toggle } from '@/components/ui'
 import { FlipCard } from './FlipCard'
 
 export function CardsPage() {
   const data = useStudyData()
+  const [exams, setExams] = useState<ExamLevel[]>([...EXAM_LEVELS])
   const [category, setCategory] = useState<Category | 'all'>('all')
   const [shakyOnly, setShakyOnly] = useState(false)
   const [deck, setDeck] = useState<TermQ[] | null>(null)
@@ -18,7 +20,9 @@ export function CardsPage() {
   const [tally, setTally] = useState({ known: 0, shaky: 0 })
   const [startedAt, setStartedAt] = useState(0)
 
-  const terms = useMemo(() => (data ? data.questions.filter((q): q is TermQ => q.type === 'term') : []), [data])
+  const allTerms = useMemo(() => (data ? data.questions.filter((q): q is TermQ => q.type === 'term') : []), [data])
+  const examCounts = useMemo(() => countByExam(allTerms), [allTerms])
+  const terms = useMemo(() => allTerms.filter((t) => inExams(t, exams)), [allTerms, exams])
   const shakyCount = useMemo(
     () => (data ? terms.filter((t) => isShaky(data.progress.records[t.id])).length : 0),
     [data, terms],
@@ -127,6 +131,10 @@ export function CardsPage() {
   return (
     <>
       <PageTitle sub="タップで用語と定義を反転。自己採点は学習記録に反映されます">用語カード</PageTitle>
+      <Card className="mb-3">
+        <h2 className="font-semibold mb-2">試験区分</h2>
+        <ExamChips selected={exams} onChange={setExams} counts={examCounts} />
+      </Card>
       <Card className="mb-3">
         <h2 className="font-semibold mb-2">分野</h2>
         <div className="flex flex-wrap gap-2">

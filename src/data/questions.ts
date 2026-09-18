@@ -1,14 +1,21 @@
-// 標準問題（全形式をまとめたもの）
+// 標準問題（全形式・全区分をまとめたもの）
 import type { Question } from '@/lib/types'
 import { TERMS } from './terms'
 import { TRUEFALSE } from './truefalse'
 import { CHOICES } from './choices'
+import { CVS_QUESTIONS } from './cvs'
 
 /**
- * 標準問題一覧。
- * 短文記述（short）・計算（calc）は型のみ用意しており、
- * データを追加すればここに並べるだけで出題ルータに乗る。
+ * 標準問題一覧と試験区分（exams）について
+ *
+ * - terms-*.ts / truefalse-*.ts / choices-*.ts の 213 問は、すべて
+ *   VES 試験対策の学習ノート（ve-exam-notes.md）が出典なので `exams: ['VES']` としている。
+ *   区分は内容から推測して振り分けていない。正しい振り分けは利用者が
+ *   「管理 → 一覧 → 一括再タグ」で行い、その結果は localStorage の overrides に保存される
+ *   （出題時に applyOverrides でマージされるため、再ビルドは不要）。
+ * - cvs*.ts は CVS 認定試験の基本問題（正誤・選択・用語・計算・説明）で、全問 `exams: ['CVS']`。
+ *   これらのファイルは別担当が管理しているため、ここでは import して束ねるだけにする。
  */
-export const STANDARD_QUESTIONS: Question[] = [...TERMS, ...TRUEFALSE, ...CHOICES]
+export const STANDARD_QUESTIONS: Question[] = [...TERMS, ...TRUEFALSE, ...CHOICES, ...CVS_QUESTIONS]
 
 export const STANDARD_IDS = new Set(STANDARD_QUESTIONS.map((q) => q.id))

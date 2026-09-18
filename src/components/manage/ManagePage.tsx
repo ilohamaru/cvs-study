@@ -74,9 +74,12 @@ export function ManagePage() {
           questions={data.questions}
           progress={data.progress}
           now={data.now}
+          overrides={data.custom.overrides}
           isCustom={(id) => !STANDARD_IDS.has(id) || data.custom.questions.some((q) => q.id === id)}
           onEdit={startEdit}
           onDelete={deleteCustom}
+          onRetag={data.retag}
+          onClearOverrides={data.clearOverrides}
         />
       )}
       {tab === 'editor' && (

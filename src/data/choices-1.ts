@@ -3,42 +3,42 @@ import type { ChoiceQ } from '@/lib/types'
 // 選択問題（前半）: VE基礎 / 機能定義 / 機能評価 / 代替案作成
 export const CHOICES_1: ChoiceQ[] = [
   {
-    id: 'ch-001', type: 'choice', category: 'VE基礎', difficulty: 1, tags: ['定義'], source: 've-exam-notes 論述2',
+    id: 'ch-001', type: 'choice', category: 'VE基礎', difficulty: 1, exams: ['VES'], tags: ['定義'], source: 've-exam-notes 論述2',
     stem: 'VEの定義「VEとは最低のライフサイクルコストで、必要な機能を確実に達成するために、製品やサービスの（　）に注ぐ、組織的努力である」の空欄に入る語句はどれか。',
     options: ['原価低減活動', '機能的研究', '創造的改善', '品質工学'],
     answerIndex: 1,
     explanation: '機能を思考の原点にして問題解決をしていくための効果的な手順・方法の体系を機能的研究法といい、「注ぐ」とは着実に実施すること。',
   },
   {
-    id: 'ch-002', type: 'choice', category: 'VE基礎', difficulty: 1, tags: ['価値'], source: 've-exam-notes 論述7',
+    id: 'ch-002', type: 'choice', category: 'VE基礎', difficulty: 1, exams: ['VES'], tags: ['価値'], source: 've-exam-notes 論述7',
     stem: '価値向上の形態として誤っているものはどれか。',
     options: ['同じ機能を安いコストで実現する', '同じコストでより優れた機能を実現する', '機能を少し下げてコストを大幅に下げる', 'コストは上げるがそれ以上に優れた機能を実現する'],
     answerIndex: 2,
     explanation: '使用者が求めている機能を少しでも下げることはVEの定義・原則から外れ、単なるコストダウンに過ぎない。',
   },
   {
-    id: 'ch-003', type: 'choice', category: 'VE基礎', difficulty: 1, tags: ['基本原則'], source: 've-exam-notes 論述1',
+    id: 'ch-003', type: 'choice', category: 'VE基礎', difficulty: 1, exams: ['VES'], tags: ['基本原則'], source: 've-exam-notes 論述1',
     stem: 'VE基本原則に含まれないものはどれか。',
     options: ['使用者優先の原則', '機能本位の原則', 'コスト最小の原則', 'チームデザインの原則'],
     answerIndex: 2,
     explanation: 'VE基本原則は使用者優先・機能本位・創造による変更・チームデザイン・価値向上の5つ。「コスト最小」は含まれない（価値向上の原則）。',
   },
   {
-    id: 'ch-004', type: 'choice', category: 'VE基礎', difficulty: 2, tags: ['基本原則'], source: 've-exam-notes 論述1',
+    id: 'ch-004', type: 'choice', category: 'VE基礎', difficulty: 2, exams: ['VES'], tags: ['基本原則'], source: 've-exam-notes 論述1',
     stem: '「各分野の専門家の知識と経験を結集する」というVE基本原則はどれか。',
     options: ['使用者優先の原則', 'チームデザインの原則', '創造による変更の原則', '価値向上の原則'],
     answerIndex: 1,
     explanation: 'チームデザインの原則。VEの定義の「組織的努力」にも対応する。',
   },
   {
-    id: 'ch-005', type: 'choice', category: 'VE基礎', difficulty: 2, tags: ['定義'], source: 've-exam-notes 論述2',
+    id: 'ch-005', type: 'choice', category: 'VE基礎', difficulty: 2, exams: ['VES'], tags: ['定義'], source: 've-exam-notes 論述2',
     stem: 'VEの定義における「組織的努力」から期待できる効果として、学習ノートに挙げられていないものはどれか。',
     options: ['相乗効果', '組織の壁の打破', '活動の柔軟性', '責任の分散'],
     answerIndex: 3,
     explanation: '組織的努力により相乗効果、組織の壁の打破、活動の柔軟性などの効果が期待できる。',
   },
   {
-    id: 'ch-006', type: 'choice', category: 'VE基礎', difficulty: 1, tags: ['実施手順'], source: 'SKILL.md 骨子',
+    id: 'ch-006', type: 'choice', category: 'VE基礎', difficulty: 1, exams: ['VES'], tags: ['実施手順'], source: 'SKILL.md 骨子',
     stem: 'VE実施手順の10の詳細ステップの正しい順序はどれか。',
     options: [
       '情報収集→機能の定義→機能の整理→機能別コスト分析→機能の評価→対象分野の選定→アイデア発想→概略評価→具体化→詳細評価',
@@ -50,7 +50,7 @@ export const CHOICES_1: ChoiceQ[] = [
     explanation: '機能定義（①情報収集②機能の定義③機能の整理）→機能評価（④機能別コスト分析⑤機能の評価⑥対象分野の選定）→代替案作成（⑦アイデア発想⑧概略評価⑨具体化⑩詳細評価）。',
   },
   {
-    id: 'ch-007', type: 'choice', category: 'VE基礎', difficulty: 2, tags: ['LCC'], source: 've-exam-notes 論述2',
+    id: 'ch-007', type: 'choice', category: 'VE基礎', difficulty: 2, exams: ['VES'], tags: ['LCC'], source: 've-exam-notes 論述2',
     stem: 'VEの定義における「最低のライフサイクルコスト」の説明として最も適切なものはどれか。',
     options: [
       '製造コストを最低にすること',
@@ -62,7 +62,7 @@ export const CHOICES_1: ChoiceQ[] = [
     explanation: '製品やサービスには開発、調達、製造、販売、使用、保守、廃棄などのライフサイクルがあり、VEではライフサイクル全体にかかるコストを対象にする。',
   },
   {
-    id: 'ch-008', type: 'choice', category: 'VE基礎', difficulty: 2, tags: ['実施手順'], source: 've-exam-notes 短文1',
+    id: 'ch-008', type: 'choice', category: 'VE基礎', difficulty: 2, exams: ['VES'], tags: ['実施手順'], source: 've-exam-notes 短文1',
     stem: 'VE実施手順を省略すべきでない理由として最も適切なものはどれか。',
     options: [
       '手順を省略すると認証機関の認定が取り消されるため',
@@ -74,49 +74,49 @@ export const CHOICES_1: ChoiceQ[] = [
     explanation: 'VE実施手順は一貫して「価値」の観点から問題解決する体系であり、実践経験から帰納的に出来上がったもの。省くと一連の論理が成り立たなくなる。',
   },
   {
-    id: 'ch-009', type: 'choice', category: 'VE基礎', difficulty: 2, tags: ['適用段階'], source: 've-exam-notes 短文1',
+    id: 'ch-009', type: 'choice', category: 'VE基礎', difficulty: 2, exams: ['VES'], tags: ['適用段階'], source: 've-exam-notes 短文1',
     stem: 'VE対象の特性や適用段階により実施方法を工夫する際の区分として正しいものはどれか。',
     options: ['0 Look / 1st Look / 2nd Look', 'Plan / Do / Check', 'Blast / Create / Refine', '技術的矛盾 / 物理的矛盾'],
     answerIndex: 0,
     explanation: 'VE対象の特性や適用段階（開発、製造、使用）により、0 Look、1st Look、2nd Lookと工夫が必要である。',
   },
   {
-    id: 'ch-010', type: 'choice', category: '機能定義', difficulty: 1, tags: ['機能の定義'], source: 've-exam-notes 付録 選択1-2',
+    id: 'ch-010', type: 'choice', category: '機能定義', difficulty: 1, exams: ['VES'], tags: ['機能の定義'], source: 've-exam-notes 付録 選択1-2',
     stem: '機能の定義における表現方法として正しいものはどれか。',
     options: ['名詞と形容詞の二語で表現する', '名詞と動詞の二語で簡潔に表現する', '動詞と副詞で表現する', '文章で詳細に表現する'],
     answerIndex: 1,
     explanation: '機能は名詞と動詞の二語で簡潔に表現し、モノ本位から機能本位への転換を図る。',
   },
   {
-    id: 'ch-011', type: 'choice', category: '機能定義', difficulty: 1, tags: ['機能系統図'], source: 've-exam-notes 論述1',
+    id: 'ch-011', type: 'choice', category: '機能定義', difficulty: 1, exams: ['VES'], tags: ['機能系統図'], source: 've-exam-notes 論述1',
     stem: '機能系統図はどのステップで作成するか。',
     options: ['機能定義の「機能の整理」', '機能評価の「機能の評価」', '代替案作成の「具体化」', '機能定義の「情報収集」'],
     answerIndex: 0,
     explanation: '機能系統図はVE実施手順「機能定義」の詳細ステップ「機能の整理」で、機能を「目的－手段」の形で整理したものである。',
   },
   {
-    id: 'ch-012', type: 'choice', category: '機能定義', difficulty: 2, tags: ['機能系統図'], source: 've-exam-notes 論述1',
+    id: 'ch-012', type: 'choice', category: '機能定義', difficulty: 2, exams: ['VES'], tags: ['機能系統図'], source: 've-exam-notes 論述1',
     stem: '機能系統図の意義として学習ノートに挙げられていないものはどれか。',
     options: ['必要機能・不要機能が明確になる', 'メンバー間のコミュニケーションが改善される', '欠落していた機能が発見できる', '目標コストが自動的に決まる'],
     answerIndex: 3,
     explanation: '意義は①必要・不要機能の明確化 ②機能本位への発想転換 ③コミュニケーション改善 ④欠落機能の発見 ⑤機能表現の修正の5つ。目標コストは機能評価で定める。',
   },
   {
-    id: 'ch-013', type: 'choice', category: '機能定義', difficulty: 2, tags: ['機能系統図', '基本原則'], source: 've-exam-notes 論述1',
+    id: 'ch-013', type: 'choice', category: '機能定義', difficulty: 2, exams: ['VES'], tags: ['機能系統図', '基本原則'], source: 've-exam-notes 論述1',
     stem: '機能系統図の作成で「顧客にとっての上位機能を繰り返し考えるプロセス」を通じてメンバーに定着するVE基本原則はどれか。',
     options: ['使用者優先の原則', 'チームデザインの原則', '創造による変更の原則', '価値向上の原則'],
     answerIndex: 0,
     explanation: '使用者優先：顧客にとっての上位機能を繰り返し考えるプロセスを通じて、使用者優先・顧客志向がメンバーに定着する。',
   },
   {
-    id: 'ch-014', type: 'choice', category: '機能定義', difficulty: 2, tags: ['機能系統図'], source: 've-exam-notes 論述1',
+    id: 'ch-014', type: 'choice', category: '機能定義', difficulty: 2, exams: ['VES'], tags: ['機能系統図'], source: 've-exam-notes 論述1',
     stem: '機能系統図は機能をどのような関係で整理したものか。',
     options: ['原因－結果', '目的－手段', '入力－出力', '部品－組立'],
     answerIndex: 1,
     explanation: '機能系統図は対象テーマの果たすべき目標を明確にするために、機能を「目的－手段」の形で整理したものである。',
   },
   {
-    id: 'ch-015', type: 'choice', category: '機能定義', difficulty: 2, tags: ['情報収集'], source: 've-exam-notes 論述9',
+    id: 'ch-015', type: 'choice', category: '機能定義', difficulty: 2, exams: ['VES'], tags: ['情報収集'], source: 've-exam-notes 論述9',
     stem: '機能定義ステップの役割として最も適切なものはどれか。',
     options: [
       '機能評価値及びコスト低減余地を明確にして活動ターゲットを決める',
@@ -128,49 +128,49 @@ export const CHOICES_1: ChoiceQ[] = [
     explanation: '1)機能定義：情報収集に基づき目標を決め、対象の持つ機能を明確にする。2)機能評価：機能評価値及びコスト低減余地を明確にして活動ターゲットを決める。',
   },
   {
-    id: 'ch-016', type: 'choice', category: '機能評価', difficulty: 1, tags: ['計算'], source: 've-exam-notes 付録 選択1-2',
+    id: 'ch-016', type: 'choice', category: '機能評価', difficulty: 1, exams: ['VES'], tags: ['計算'], source: 've-exam-notes 付録 選択1-2',
     stem: '「価値の程度」を求める式として正しいものはどれか。',
     options: ['現行コスト／機能評価値', '機能評価値／現行コスト', '現行コスト－機能評価値', '機能評価値－現行コスト'],
     answerIndex: 1,
     explanation: '価値の程度＝機能評価値／現行コスト。コスト低減余地＝現行コスト－機能評価値。',
   },
   {
-    id: 'ch-017', type: 'choice', category: '機能評価', difficulty: 1, tags: ['計算'], source: 've-exam-notes 付録 選択1-2',
+    id: 'ch-017', type: 'choice', category: '機能評価', difficulty: 1, exams: ['VES'], tags: ['計算'], source: 've-exam-notes 付録 選択1-2',
     stem: 'ある機能の現行コストが1,000円、機能評価値が600円のとき、コスト低減余地はいくらか。',
     options: ['0.6円', '400円', '600円', '1,600円'],
     answerIndex: 1,
     explanation: 'コスト低減余地＝現行コスト－機能評価値＝1,000－600＝400円。価値の程度は600/1,000＝0.6。',
   },
   {
-    id: 'ch-018', type: 'choice', category: '機能評価', difficulty: 2, tags: ['評価方法'], source: 've-exam-notes 論述6',
+    id: 'ch-018', type: 'choice', category: '機能評価', difficulty: 2, exams: ['VES'], tags: ['評価方法'], source: 've-exam-notes 論述6',
     stem: '機能評価の3方法のうち、根拠が「世の中のコストレベル」であるものはどれか。',
     options: ['実績価値標準', 'アイデア想定', '機能の重要度比較', 'テアダウン'],
     answerIndex: 0,
     explanation: '実績価値標準は世の中のコストレベルを根拠とし、長所は目標達成の動機を得ること、短所は情報収集と精度が手間なこと。',
   },
   {
-    id: 'ch-019', type: 'choice', category: '機能評価', difficulty: 2, tags: ['評価方法'], source: 've-exam-notes 論述6',
+    id: 'ch-019', type: 'choice', category: '機能評価', difficulty: 2, exams: ['VES'], tags: ['評価方法'], source: 've-exam-notes 論述6',
     stem: '機能評価の方法「アイデア想定」の短所はどれか。',
     options: ['情報収集と精度が手間', 'コスト見積りが困難', '達成可能性とは無関係', '時間がかかる'],
     answerIndex: 1,
     explanation: 'アイデア想定は改善の可能性を根拠とし、長所は短時間で評価できること、短所はコスト見積りが困難なこと。',
   },
   {
-    id: 'ch-020', type: 'choice', category: '機能評価', difficulty: 2, tags: ['評価方法'], source: 've-exam-notes 論述6',
+    id: 'ch-020', type: 'choice', category: '機能評価', difficulty: 2, exams: ['VES'], tags: ['評価方法'], source: 've-exam-notes 論述6',
     stem: '機能の重要度比較に用いられる手法の組合せとして正しいものはどれか。',
     options: ['FD法・DARE法・マッジ法', 'KJ法・NM法・ゴードン法', 'FMEA・FTA・QFD', 'PERT・CPM・ガントチャート'],
     answerIndex: 0,
     explanation: '機能の重要度比較にはFD法、DARE法、マッジ法などが用いられる。',
   },
   {
-    id: 'ch-021', type: 'choice', category: '機能評価', difficulty: 2, tags: ['評価方法'], source: 've-exam-notes 論述6',
+    id: 'ch-021', type: 'choice', category: '機能評価', difficulty: 2, exams: ['VES'], tags: ['評価方法'], source: 've-exam-notes 論述6',
     stem: '開発など経験のない新規テーマに用いるのに適した機能評価の方法はどれか。',
     options: ['実績価値標準', 'アイデア想定', '機能の重要度比較', '機能別コスト分析'],
     answerIndex: 2,
     explanation: '機能の重要度比較は開発など経験のない新規テーマに用いる。ただし機能系統図に不安がある場合は避ける。',
   },
   {
-    id: 'ch-022', type: 'choice', category: '機能評価', difficulty: 2, tags: ['実施手順'], source: 've-exam-notes 論述6',
+    id: 'ch-022', type: 'choice', category: '機能評価', difficulty: 2, exams: ['VES'], tags: ['実施手順'], source: 've-exam-notes 論述6',
     stem: '機能評価の詳細ステップの正しい順序はどれか。',
     options: [
       '機能の評価→機能別コスト分析→対象分野の選定',
@@ -182,7 +182,7 @@ export const CHOICES_1: ChoiceQ[] = [
     explanation: '機能別コスト分析（現在かけているコストを明確化）→機能の評価（評価基準とコスト目標を設定）→対象分野の選定（価値の程度の低い機能分野を選定）。',
   },
   {
-    id: 'ch-023', type: 'choice', category: '機能評価', difficulty: 2, tags: ['実施手順'], source: 've-exam-notes 短文2',
+    id: 'ch-023', type: 'choice', category: '機能評価', difficulty: 2, exams: ['VES'], tags: ['実施手順'], source: 've-exam-notes 短文2',
     stem: '機能評価を省略した場合に起こりうる問題として学習ノートに挙げられているものはどれか。',
     options: [
       'アイデア発想の対象とすべき機能分野にメンバー間でズレが生じる',
@@ -194,7 +194,7 @@ export const CHOICES_1: ChoiceQ[] = [
     explanation: '省略すると①アイデア発想の対象とすべき機能分野にズレが生じる ②目標コストに到達するためのアイデアが不十分なまま進行する可能性がある。',
   },
   {
-    id: 'ch-024', type: 'choice', category: '機能評価', difficulty: 2, tags: ['評価方法'], source: 've-exam-notes 論述6',
+    id: 'ch-024', type: 'choice', category: '機能評価', difficulty: 2, exams: ['VES'], tags: ['評価方法'], source: 've-exam-notes 論述6',
     stem: '実績価値標準を選択するのに適した状況はどれか。',
     options: [
       '機能定義のアウトプットが充実し、メンバーがテーマに精通し、根拠を残したい場合',
@@ -206,7 +206,7 @@ export const CHOICES_1: ChoiceQ[] = [
     explanation: '実績価値標準は客観性のある機能評価値が得られるため、機能定義が充実し、メンバーが精通し、根拠を残したい場合に選択する。',
   },
   {
-    id: 'ch-025', type: 'choice', category: '代替案作成', difficulty: 1, tags: ['マイルズ'], source: 've-exam-notes 用語2',
+    id: 'ch-025', type: 'choice', category: '代替案作成', difficulty: 1, exams: ['VES'], tags: ['マイルズ'], source: 've-exam-notes 用語2',
     stem: 'Blast-Create-Refineの「Create」の説明として正しいものはどれか。',
     options: [
       '従来の考え方を破棄する',
@@ -218,7 +218,7 @@ export const CHOICES_1: ChoiceQ[] = [
     explanation: 'Blast＝従来の考え方を破棄、Create＝機能に焦点をあてて優れたアイデアを創造、Refine＝洗練させて価値の高い代替案に育てあげる。',
   },
   {
-    id: 'ch-026', type: 'choice', category: '代替案作成', difficulty: 2, tags: ['実施手順'], source: 've-exam-notes 論述9',
+    id: 'ch-026', type: 'choice', category: '代替案作成', difficulty: 2, exams: ['VES'], tags: ['実施手順'], source: 've-exam-notes 論述9',
     stem: '代替案作成ステップの詳細ステップの正しい順序はどれか。',
     options: [
       'アイデア発想→具体化→概略評価→詳細評価',
@@ -230,7 +230,7 @@ export const CHOICES_1: ChoiceQ[] = [
     explanation: '⑦アイデア発想→⑧概略評価→⑨具体化→⑩詳細評価。評価・具体化・洗練を繰り返し目標達成できる代替案を作成する。',
   },
   {
-    id: 'ch-027', type: 'choice', category: '代替案作成', difficulty: 2, tags: ['実施手順'], source: 've-exam-notes 論述9',
+    id: 'ch-027', type: 'choice', category: '代替案作成', difficulty: 2, exams: ['VES'], tags: ['実施手順'], source: 've-exam-notes 論述9',
     stem: '概略評価における典型的な不足として学習ノートに挙げられているものはどれか。',
     options: [
       '可能性の低いアイデアまで全て残してしまう',

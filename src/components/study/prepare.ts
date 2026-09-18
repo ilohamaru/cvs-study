@@ -1,5 +1,6 @@
 // 出題前の前処理（選択肢のシャッフル、用語問題の4択化など）
-import type { ChoiceQ, Question, TermQ } from '@/lib/types'
+import type { CalcQ, ChoiceQ, Question, TermQ } from '@/lib/types'
+import { isDescriptiveCalc } from '@/lib/types'
 import { shuffle } from '@/lib/srs'
 
 /** 選択式（choice / term）の出題時の選択肢と正解位置。セッション中は固定 */
@@ -38,6 +39,17 @@ export function prepareAll(questions: readonly Question[], all: readonly Questio
   return m
 }
 
+/** 自己採点（書けた / 書けなかった）で判定する形式か */
+export function isSelfGraded(q: Question): boolean {
+  return q.type === 'short' || (q.type === 'calc' && isDescriptiveCalc(q))
+}
+
+/** 計算問題の数値判定。tolerance の範囲内なら正解、未指定なら完全一致 */
+export function isCalcCorrect(q: CalcQ, value: number): boolean {
+  const tol = q.tolerance ?? 0
+  return Math.abs(value - q.answer) <= tol + Number.EPSILON
+}
+
 export function isCorrectAnswer(q: Question, prepared: PreparedOptions | undefined, choice: number | boolean): boolean {
   switch (q.type) {
     case 'truefalse':
@@ -46,8 +58,10 @@ export function isCorrectAnswer(q: Question, prepared: PreparedOptions | undefin
     case 'term':
       return typeof choice === 'number' && !!prepared && choice === prepared.answerIndex
     case 'short':
-    case 'calc':
-      // 未実装形式: 自己採点（true=正解, false=不正解）として扱う
+      // 自己採点（true=書けた, false=書けなかった）
       return typeof choice === 'boolean' && choice
+    case 'calc':
+      if (isDescriptiveCalc(q)) return typeof choice === 'boolean' && choice
+      return typeof choice === 'number' && isCalcCorrect(q, choice)
   }
 }

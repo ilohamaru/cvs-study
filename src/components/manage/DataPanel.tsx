@@ -18,7 +18,7 @@ export function DataPanel({ data }: { data: StudyData }) {
     const d = new Date(bundle.exportedAt)
     const stamp = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`
     a.href = url
-    a.download = `cvs-study-${stamp}.json`
+    a.download = `ve-study-${stamp}.json`
     a.click()
     URL.revokeObjectURL(url)
   }
@@ -29,7 +29,9 @@ export function DataPanel({ data }: { data: StudyData }) {
       data.reload()
       setMessage({
         ok: true,
-        text: `取り込みました: 学習記録 ${result.imported.records} 件 / セッション ${result.imported.sessions} 件 / 自作問題 ${result.imported.custom} 件`,
+        text:
+          `取り込みました: 学習記録 ${result.imported.records} 件 / セッション ${result.imported.sessions} 件 / 自作問題 ${result.imported.custom} 件 / 区分の振り直し ${result.imported.overrides} 件` +
+          (result.imported.skipped > 0 ? `（形式不正のため ${result.imported.skipped} 件を読み飛ばしました）` : ''),
       })
       setText('')
     } else {
@@ -50,13 +52,14 @@ export function DataPanel({ data }: { data: StudyData }) {
   }
 
   const recordCount = Object.keys(data.progress.records).length
+  const overrideCount = Object.keys(data.custom.overrides).length
 
   return (
     <div className="space-y-4">
       <Card>
         <h2 className="font-semibold mb-1">エクスポート</h2>
         <p className="text-sm text-muted mb-3 leading-relaxed">
-          学習記録（{recordCount} 件 / セッション {data.progress.sessions.length} 件）と自作問題（{data.custom.questions.length} 件）を JSON ファイルとして保存します。
+          学習記録（{recordCount} 件 / セッション {data.progress.sessions.length} 件）、自作問題（{data.custom.questions.length} 件）、標準問題の区分の振り直し（{overrideCount} 件）を JSON ファイル（schemaVersion 2）として保存します。
         </p>
         <Button variant="primary" onClick={exportJson}>
           JSON をダウンロード
@@ -66,7 +69,8 @@ export function DataPanel({ data }: { data: StudyData }) {
       <Card>
         <h2 className="font-semibold mb-1">インポート</h2>
         <p className="text-sm text-muted mb-3 leading-relaxed">
-          エクスポートした JSON を取り込みます。学習記録は新しい方を残してマージ、自作問題は同じ ID を上書きします。
+          エクスポートした JSON を取り込みます。学習記録は新しい方を残してマージ、自作問題と区分の振り直しは同じ ID を上書きします。
+          旧形式（schemaVersion 1、試験区分なし）の JSON も取り込め、区分は VES として補われます。
         </p>
         <input
           ref={fileRef}

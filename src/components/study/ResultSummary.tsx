@@ -2,8 +2,8 @@
 
 import Link from 'next/link'
 import type { AnswerResult, Category, Question } from '@/lib/types'
-import { CATEGORIES } from '@/lib/types'
-import { Button, Card, CategoryBadge, PageTitle, TypeBadge, pct } from '@/components/ui'
+import { CATEGORIES, isDescriptiveCalc } from '@/lib/types'
+import { Button, Card, CategoryBadge, ExamBadges, PageTitle, TypeBadge, pct } from '@/components/ui'
 
 interface Props {
   questions: Question[]
@@ -37,7 +37,7 @@ function correctText(q: Question): string {
     case 'short':
       return q.modelAnswer
     case 'calc':
-      return `${q.answer}${q.unit ?? ''}`
+      return isDescriptiveCalc(q) ? q.solution : `${q.answer}${q.unit ?? ''}`
   }
 }
 
@@ -97,12 +97,13 @@ export function ResultSummary({ questions, results, onRetryWrong, onBack }: Prop
               return (
                 <li key={r.questionId} className="rounded-lg border border-border p-3 text-sm">
                   <div className="flex flex-wrap gap-2 mb-1">
+                    <ExamBadges exams={q.exams} />
                     <CategoryBadge category={q.category} />
                     <TypeBadge type={q.type} />
                   </div>
                   <p className="leading-relaxed break-words mb-1">{questionText(q)}</p>
-                  <p className="text-success font-medium break-words">正解: {correctText(q)}</p>
-                  {(q.type === 'truefalse' || q.type === 'choice') && (
+                  <p className="text-success font-medium break-words whitespace-pre-line">正解: {correctText(q)}</p>
+                  {(q.type === 'truefalse' || q.type === 'choice') && q.explanation.trim() && (
                     <p className="text-muted leading-relaxed break-words mt-1">{q.explanation}</p>
                   )}
                 </li>

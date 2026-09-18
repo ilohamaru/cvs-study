@@ -21,7 +21,7 @@ export function Nav() {
       <header className="hidden sm:block fixed top-0 inset-x-0 z-20 bg-surface/95 backdrop-blur border-b border-border">
         <div className="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
           <Link href="/" className="font-bold text-lg tracking-tight text-accent">
-            CVS 学習
+            VE 学習
           </Link>
           <nav className="flex items-center gap-1">
             {LINKS.map(({ href, label }) => (
@@ -42,7 +42,7 @@ export function Nav() {
 
       {/* スマホ: 上部にアプリ名、下部にタブバー */}
       <div className="sm:hidden h-12 flex items-center px-4 border-b border-border bg-surface">
-        <span className="font-bold text-accent">CVS 学習</span>
+        <span className="font-bold text-accent">VE 学習</span>
       </div>
       <nav className="sm:hidden fixed bottom-0 inset-x-0 z-20 bg-surface/95 backdrop-blur border-t border-border pb-[env(safe-area-inset-bottom)]">
         <ul className="grid grid-cols-4">

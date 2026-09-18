@@ -1,8 +1,8 @@
 'use client'
 
-import type { Category, Progress, QuestionType, StudyConfig } from '@/lib/types'
-import { CATEGORIES, IMPLEMENTED_TYPES, QUESTION_TYPE_LABEL } from '@/lib/types'
-import { Button, Card, Chip, Toggle } from '@/components/ui'
+import type { Category, ExamLevel, Progress, QuestionType, StudyConfig } from '@/lib/types'
+import { EXAM_LABEL, IMPLEMENTED_TYPES, QUESTION_TYPE_LABEL } from '@/lib/types'
+import { Button, Card, Chip, ExamChips, Toggle } from '@/components/ui'
 import clsx from 'clsx'
 
 interface Props {
@@ -12,14 +12,19 @@ interface Props {
   onStart: () => void
   progress: Progress
   now: number
+  /** 区分ごとの収録数（チップに表示） */
+  examCounts: Record<ExamLevel, number>
+  /** 選択中の区分に存在する分野だけ */
+  availableCategories: Category[]
 }
 
 const ALL_TYPES: QuestionType[] = ['truefalse', 'choice', 'term', 'short', 'calc']
 const COUNTS: StudyConfig['count'][] = [10, 20, 30]
 
-export function SessionSetup({ config, onChange, poolSize, onStart, progress, now }: Props) {
-  const allSelected = config.categories.length === CATEGORIES.length
+export function SessionSetup({ config, onChange, poolSize, onStart, progress, now, examCounts, availableCategories }: Props) {
+  const allSelected = availableCategories.length > 0 && availableCategories.every((c) => config.categories.includes(c))
   const dueCount = Object.values(progress.records).filter((r) => r.dueAt <= now && r.correct + r.wrong > 0).length
+  const emptyExams = config.exams.filter((e) => examCounts[e] === 0)
 
   const toggleCategory = (c: Category) => {
     const has = config.categories.includes(c)
@@ -35,43 +40,44 @@ export function SessionSetup({ config, onChange, poolSize, onStart, progress, no
   return (
     <div className="space-y-4">
       <Card>
+        <h2 className="font-semibold mb-2">試験区分</h2>
+        <ExamChips selected={config.exams} onChange={(exams) => onChange({ ...config, exams })} counts={examCounts} />
+        {config.exams.length === 0 && <p className="text-xs text-danger mt-2">区分を1つ以上選んでください。</p>}
+        {emptyExams.length > 0 && (
+          <p className="text-xs text-muted mt-2 leading-relaxed">
+            {emptyExams.map((e) => EXAM_LABEL[e]).join('・')} は該当0問です。「管理」画面で問題を追加するか、既存問題の区分を振り直してください。
+          </p>
+        )}
+      </Card>
+
+      <Card>
         <div className="flex items-center justify-between mb-2">
           <h2 className="font-semibold">分野</h2>
-          <Button size="sm" variant="ghost" onClick={() => onChange({ ...config, categories: allSelected ? [] : [...CATEGORIES] })}>
+          <Button size="sm" variant="ghost" onClick={() => onChange({ ...config, categories: allSelected ? [] : [...availableCategories] })}>
             {allSelected ? '全解除' : '全選択'}
           </Button>
         </div>
-        <div className="flex flex-wrap gap-2">
-          {CATEGORIES.map((c) => (
-            <Chip key={c} active={config.categories.includes(c)} onClick={() => toggleCategory(c)}>
-              {c}
-            </Chip>
-          ))}
-        </div>
+        {availableCategories.length === 0 ? (
+          <p className="text-xs text-muted">選択中の区分に問題がありません。</p>
+        ) : (
+          <div className="flex flex-wrap gap-2">
+            {availableCategories.map((c) => (
+              <Chip key={c} active={config.categories.includes(c)} onClick={() => toggleCategory(c)}>
+                {c}
+              </Chip>
+            ))}
+          </div>
+        )}
       </Card>
 
       <Card>
         <h2 className="font-semibold mb-2">形式</h2>
         <div className="flex flex-wrap gap-2">
-          {ALL_TYPES.map((t) => {
-            const implemented = IMPLEMENTED_TYPES.includes(t)
-            if (!implemented) {
-              return (
-                <span
-                  key={t}
-                  className="px-3 py-1.5 rounded-full text-sm border border-dashed border-border text-muted opacity-70"
-                  title="今後追加予定"
-                >
-                  {QUESTION_TYPE_LABEL[t]}（準備中）
-                </span>
-              )
-            }
-            return (
-              <Chip key={t} active={config.types.includes(t)} onClick={() => toggleType(t)}>
-                {QUESTION_TYPE_LABEL[t]}
-              </Chip>
-            )
-          })}
+          {ALL_TYPES.filter((t) => IMPLEMENTED_TYPES.includes(t)).map((t) => (
+            <Chip key={t} active={config.types.includes(t)} onClick={() => toggleType(t)}>
+              {QUESTION_TYPE_LABEL[t]}
+            </Chip>
+          ))}
         </div>
       </Card>
 
@@ -112,7 +118,7 @@ export function SessionSetup({ config, onChange, poolSize, onStart, progress, no
         開始する
       </Button>
       <p className="text-xs text-muted leading-relaxed">
-        キーボード: 正誤問題は <kbd>1</kbd>=○ <kbd>2</kbd>=×、選択問題は <kbd>1</kbd>〜<kbd>4</kbd>、<kbd>Enter</kbd>=次へ
+        キーボード: 正誤問題は <kbd>1</kbd>=○ <kbd>2</kbd>=×、選択問題は <kbd>1</kbd>〜<kbd>4</kbd>、説明・計算（記述式）は解答を見た後 <kbd>1</kbd>=書けた <kbd>2</kbd>=書けなかった、<kbd>Enter</kbd>=次へ
       </p>
     </div>
   )

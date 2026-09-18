@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import type { ReactNode, ButtonHTMLAttributes } from 'react'
-import type { Category, QuestionType } from '@/lib/types'
-import { QUESTION_TYPE_LABEL } from '@/lib/types'
+import type { Category, ExamLevel, QuestionType } from '@/lib/types'
+import { EXAM_LABEL, EXAM_LEVELS, QUESTION_TYPE_LABEL } from '@/lib/types'
 
 export function Card({ children, className }: { children: ReactNode; className?: string }) {
   return (
@@ -66,6 +66,44 @@ export function TypeBadge({ type }: { type: QuestionType }) {
     <span className="inline-block rounded-md bg-surface-2 text-muted px-2 py-0.5 text-xs font-medium whitespace-nowrap">
       {QUESTION_TYPE_LABEL[type]}
     </span>
+  )
+}
+
+const EXAM_BADGE_CLASS: Record<ExamLevel, string> = {
+  CVS: 'bg-danger-soft text-danger',
+  VES: 'bg-success-soft text-success',
+  VEL: 'bg-warn-soft text-warn',
+}
+
+/** 試験区分バッジ（複数なら並べる） */
+export function ExamBadges({ exams }: { exams: readonly ExamLevel[] }) {
+  return (
+    <>
+      {EXAM_LEVELS.filter((e) => exams.includes(e)).map((e) => (
+        <span key={e} className={clsx('inline-block rounded-md px-2 py-0.5 text-xs font-medium whitespace-nowrap', EXAM_BADGE_CLASS[e])}>
+          {EXAM_LABEL[e]}
+        </span>
+      ))}
+    </>
+  )
+}
+
+/** 試験区分の複数選択チップ。counts を渡すと件数を併記する */
+export function ExamChips({
+  selected, onChange, counts,
+}: { selected: readonly ExamLevel[]; onChange: (next: ExamLevel[]) => void; counts?: Record<ExamLevel, number> }) {
+  const toggle = (e: ExamLevel) => {
+    onChange(selected.includes(e) ? selected.filter((x) => x !== e) : [...selected, e])
+  }
+  return (
+    <div className="flex flex-wrap gap-2">
+      {EXAM_LEVELS.map((e) => (
+        <Chip key={e} active={selected.includes(e)} onClick={() => toggle(e)}>
+          {EXAM_LABEL[e]}
+          {counts && <span className="ml-1 opacity-80">{counts[e] === 0 ? '該当0問' : `(${counts[e]})`}</span>}
+        </Chip>
+      ))}
+    </div>
   )
 }
 

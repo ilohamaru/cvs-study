@@ -3,9 +3,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import clsx from 'clsx'
 import type { AnswerResult, Question } from '@/lib/types'
-import { Button, Card, CategoryBadge, TypeBadge } from '@/components/ui'
-import { isCorrectAnswer, prepareAll, type PreparedOptions } from './prepare'
-import { ChoiceView, Explanation, PlaceholderView, TFView, TermQuizView } from './views'
+import { Button, Card, CategoryBadge, ExamBadges, TypeBadge } from '@/components/ui'
+import { isCorrectAnswer, isSelfGraded, prepareAll, type PreparedOptions } from './prepare'
+import { ChoiceView, Explanation, TFView, TermQuizView, hasExplanation, type Answered } from './views'
+import { CalcView, ShortView } from './freeViews'
 
 interface Props {
   questions: Question[]
@@ -14,8 +15,6 @@ interface Props {
   onFinish: (results: AnswerResult[]) => void
   onAbort: () => void
 }
-
-type Answered = { choice: number | boolean; correct: boolean } | null
 
 export function QuestionRunner({ questions, allQuestions, onAnswer, onFinish, onAbort }: Props) {
   const [index, setIndex] = useState(0)
@@ -51,7 +50,7 @@ export function QuestionRunner({ questions, allQuestions, onAnswer, onFinish, on
     setAnswered(null)
   }, [answered, isLast, onFinish, results])
 
-  // キーボード操作
+  // キーボード操作（正誤・選択・用語）。short / calc は各ビュー側で扱う
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
@@ -65,10 +64,10 @@ export function QuestionRunner({ questions, allQuestions, onAnswer, onFinish, on
       if (answered || !q) return
       const n = Number(e.key)
       if (!Number.isInteger(n) || n < 1) return
-      if (q.type === 'truefalse' || q.type === 'short' || q.type === 'calc') {
+      if (q.type === 'truefalse') {
         if (n === 1) answer(true)
         else if (n === 2) answer(false)
-      } else if (quiz && n <= quiz.options.length) {
+      } else if ((q.type === 'choice' || q.type === 'term') && quiz && n <= quiz.options.length) {
         answer(n - 1)
       }
     }
@@ -77,6 +76,8 @@ export function QuestionRunner({ questions, allQuestions, onAnswer, onFinish, on
   }, [answered, q, quiz, answer, next])
 
   if (!q) return null
+  const selfGraded = isSelfGraded(q)
+  const verdict = answered ? (selfGraded ? (answered.correct ? '書けた' : '書けなかった') : answered.correct ? '正解' : '不正解') : ''
 
   return (
     <div className="space-y-3">
@@ -94,6 +95,7 @@ export function QuestionRunner({ questions, allQuestions, onAnswer, onFinish, on
 
       <Card>
         <div className="flex flex-wrap items-center gap-2 mb-3">
+          <ExamBadges exams={q.exams} />
           <CategoryBadge category={q.category} />
           <TypeBadge type={q.type} />
           <span className="text-xs text-muted">難易度 {'★'.repeat(q.difficulty)}</span>
@@ -103,10 +105,10 @@ export function QuestionRunner({ questions, allQuestions, onAnswer, onFinish, on
 
       {answered && (
         <Card className={clsx('border-2', answered.correct ? 'border-success' : 'border-danger')}>
-          <div className={clsx('font-bold mb-2', answered.correct ? 'text-success' : 'text-danger')}>
-            {answered.correct ? '正解' : '不正解'}
+          <div className={clsx('font-bold', answered.correct ? 'text-success' : 'text-danger', hasExplanation(q) && 'mb-2')}>
+            {verdict}
           </div>
-          <Explanation q={q} />
+          {hasExplanation(q) && <Explanation q={q} />}
           <p className="text-xs text-muted mt-2">出典: {q.source}</p>
           <Button variant="primary" size="lg" className="w-full mt-3" onClick={next}>
             {isLast ? '結果を見る' : '次へ（Enter）'}
@@ -117,7 +119,7 @@ export function QuestionRunner({ questions, allQuestions, onAnswer, onFinish, on
   )
 }
 
-/** 出題ルータ: 形式ごとにビューを切り替える。short / calc はプレースホルダ */
+/** 出題ルータ: 形式ごとにビューを切り替える */
 function QuestionBody({
   q, quiz, answered, onAnswer,
 }: { q: Question; quiz?: PreparedOptions; answered: Answered; onAnswer: (v: number | boolean) => void }) {
@@ -129,7 +131,8 @@ function QuestionBody({
     case 'term':
       return quiz ? <TermQuizView q={q} prepared={quiz} answered={answered} onAnswer={onAnswer} /> : null
     case 'short':
+      return <ShortView q={q} answered={answered} onAnswer={onAnswer} />
     case 'calc':
-      return <PlaceholderView q={q} answered={answered} onAnswer={onAnswer} />
+      return <CalcView q={q} answered={answered} onAnswer={onAnswer} />
   }
 }
